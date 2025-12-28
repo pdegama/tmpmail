@@ -1,6 +1,20 @@
 version: '3.8'
 
 services:
+  backend:
+    build: ./backend
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URL=${MONGO_URL}
+      - RABBITMQ_USER=${RABBITMQ_USER}
+      - RABBITMQ_PASS=${RABBITMQ_PASS}
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - TYPE=${TYPE}
+    depends_on:
+      - rabbitmq
+
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
