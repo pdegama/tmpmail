@@ -7,5 +7,5 @@ export const env = {
     RABBITMQ_QUEUE: process.env.RABBITMQ_QUEUE,
     MONGO_URL: process.env.MONGO_URL,
     JWT: process.env.JWT,
-    MAILBOX_DOMAINS: process.env.MAILBOX_DOMAINS?.split(";").map(e => e.trim()).filter(e => e != "") as string[],
+    MAILBOX_DOMAINS: process.env.MAILBOX_DOMAINS?.split(";").map(e => e.trim().toLowerCase()).filter(e => e != "") as string[],
 }
