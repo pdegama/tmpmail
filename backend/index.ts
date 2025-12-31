@@ -4,8 +4,10 @@ import { connectDB } from './db/connect'
 import apiRouter from './api/router'
 import { cors } from "hono/cors"
 import { websocket } from 'hono/bun'
+import { reciveEmail } from './queue/receive'
 
 await connectDB();
+await reciveEmail();
 
 const app = new Hono()
 app.use(cors())
