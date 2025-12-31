@@ -3,6 +3,7 @@ import { env } from './env'
 import { connectDB } from './db/connect'
 import apiRouter from './api/router'
 import { cors } from "hono/cors"
+import { websocket } from 'hono/bun'
 
 await connectDB();
 
@@ -22,4 +23,7 @@ app.notFound((ctx: Context) => ctx.json({
   message: "Not Found",
 }, 404))
 
-export default app
+export default {
+  fetch: app.fetch,
+  websocket: websocket,
+}

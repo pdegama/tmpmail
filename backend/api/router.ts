@@ -1,8 +1,8 @@
 import { Hono } from "hono";
-import auth from "./auth";
+import mailbox from "./mailbox";
 
 const apiRouter = new Hono()
 
-apiRouter.route("/auth", auth)
+apiRouter.route("/mailbox", mailbox)
 
 export default apiRouter
