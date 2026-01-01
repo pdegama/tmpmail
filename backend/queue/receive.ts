@@ -57,13 +57,11 @@ const fwdMail = async (msg: string) => {
             })),
         }
         
-        console.log(fullMail);
         for (const recipient of fullMail.recipients) {
-            const user = await Users.findOne({ mailbox: recipient.toLowerCase().trim() });
-            console.log(user);
-            
+            const user = await Users.findOne({ mailbox: recipient.toLowerCase().trim() });        
             if (user) {
                 await Mails.create({ ...data, userId: user._id });
+                console.log(`Mail for ${recipient} stored.`);
             }
         }
         return true;
