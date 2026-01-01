@@ -57,15 +57,18 @@ const fwdMail = async (msg: string) => {
             })),
         }
         
+        console.log(fullMail);
         for (const recipient of fullMail.recipients) {
-            const user = await Users.findOne({ email: recipient.toLowerCase().trim() });
+            const user = await Users.findOne({ mailbox: recipient.toLowerCase().trim() });
+            console.log(user);
+            
             if (user) {
                 await Mails.create({ ...data, userId: user._id });
             }
         }
-        
         return true;
     } catch (err) { 
+        console.log(err);
         return true;
     }
 }
