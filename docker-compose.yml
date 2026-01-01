@@ -10,8 +10,11 @@ services:
       - RABBITMQ_USER=${RABBITMQ_USER}
       - RABBITMQ_PASS=${RABBITMQ_PASS}
       - RABBITMQ_HOST=rabbitmq
-      - RABBITMQ_PORT=5672
+      - RABBITMQ_PORT=${RABBITMQ_PORT}
+      - RABBITMQ_QUEUE=${RABBITMQ_QUEUE}
       - TYPE=${TYPE}
+      - JWT=${JWT}
+      - MAILBOX_DOMAINS=${MAILBOX_DOMAINS}
     depends_on:
       - rabbitmq
 

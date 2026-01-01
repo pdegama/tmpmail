@@ -6,6 +6,9 @@ import { cors } from "hono/cors"
 import { websocket } from 'hono/bun'
 import { reciveEmail } from './queue/receive'
 
+console.log("tmp mail started");
+console.log("env", env);
+
 await connectDB();
 await reciveEmail();
 
