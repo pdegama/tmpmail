@@ -6,6 +6,8 @@ import { Users } from "../models/users";
 import { Mails } from "../models/mails";
 
 export const reciveEmail = async () => {
+    console.log("start recive email");
+
     const connection = await connectAmpq();
     const channel = await connection.createChannel();
     await channel.assertQueue(env.RABBITMQ_QUEUE || "recive_mail", { durable: false });
@@ -18,7 +20,7 @@ export const reciveEmail = async () => {
             if (status) {
                 channel.ack(msg);
             }
-            
+
             // channel.ack(msg);
         } else {
             console.log('Consumer cancelled by server');
@@ -38,7 +40,7 @@ export type FullMail = {
 const fwdMail = async (msg: string) => {
     const fullMail = YAML.parse(msg) as FullMail;
     if (!fullMail.success) return true;
-    
+
     try {
         const mail = await simpleParser(fullMail.data);
         const data = {
@@ -56,16 +58,16 @@ const fwdMail = async (msg: string) => {
                 size: att.size,
             })),
         }
-        
+
         for (const recipient of fullMail.recipients) {
-            const user = await Users.findOne({ mailbox: recipient.toLowerCase().trim() });        
+            const user = await Users.findOne({ mailbox: recipient.toLowerCase().trim() });
             if (user) {
                 await Mails.create({ ...data, userId: user._id });
                 console.log(`Mail for ${recipient} stored.`);
             }
         }
         return true;
-    } catch (err) { 
+    } catch (err) {
         console.log(err);
         return true;
     }
