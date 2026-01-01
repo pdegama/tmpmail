@@ -12,9 +12,10 @@ services:
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=${RABBITMQ_PORT}
       - RABBITMQ_QUEUE=${RABBITMQ_QUEUE}
-      - TYPE=${TYPE}
+      - TYPE=production
       - JWT=${JWT}
       - MAILBOX_DOMAINS=${MAILBOX_DOMAINS}
+      - NODE_ENV=production
     depends_on:
       - rabbitmq
 
