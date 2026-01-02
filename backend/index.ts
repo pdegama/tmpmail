@@ -10,8 +10,8 @@ console.log("tmp mail started");
 console.log("env", { ...env, RABBITMQ_PASS: "********", MONGO_URL: "********", JWT: "********" });
 
 await connectDB();
-if (env.TYPE == "production") await reciveEmail();
-// await reciveEmail();
+// if (env.TYPE == "production") await reciveEmail();
+await reciveEmail();
 
 const app = new Hono()
 app.use(cors())
