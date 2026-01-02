@@ -141,3 +141,13 @@ export async function verifyAndGetUser(c: Context): Promise<UserType> {
     if (!user) throw "User not found";
     return user
 }
+
+export async function verifyAndGetUserWS(token: string): Promise<UserType> {
+    const userToken = decodeUserToken(token)
+    if (!userToken) throw "Invalid request, maybe invalid token";
+    const user = await Users.findOne({
+        mailbox: userToken.mailbox.trim().toLowerCase()
+    })
+    if (!user) throw "User not found";
+    return user;
+}

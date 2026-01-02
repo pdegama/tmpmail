@@ -1,29 +1,33 @@
 import { Hono } from "hono";
 import { upgradeWebSocket } from "hono/bun";
-import { WSContext } from "hono/ws";
+import { authUserWS } from "../utils/ws";
 
 const ws = new Hono()
 
-const wsSockets = new Map<string, WSContext>()
-
 ws.get("/", upgradeWebSocket(c => {
     return {
-        onOpen(event, ws) {
-            console.log('Connection opened')
-            wsSockets.set("1", ws)
-        },
         onMessage(event, ws) {
-            console.log(`Message from client: ${event.data}`)
-            wsSockets.set("1", ws)
+            try {
+                const data = JSON.parse(event.data.toString())
+                if (data.event && typeof data.event === "string") {
+                    switch (data.event) {
+                        case "auth":
+                            // console.log("11");
+                            if (data.token && typeof data.token === "string") authUserWS(ws, data.token)
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            } catch (error) {
+                // console.log(error);
+            }
         },
-        onClose: () => {
-            console.log('Connection closed')
+        onClose: (_, ws) => {
+            // @ts-ignore
+            ws.raw.onClose()
         },
     }
 }))
-
-setInterval(() => {
-    wsSockets.get("1")?.send('Hello from server!')
-}, 3000)
 
 export default ws

@@ -3,7 +3,8 @@ import { env } from "../env";
 import { connectAmpq } from "./ampq";
 import { simpleParser } from 'mailparser';
 import { Users } from "../models/users";
-import { Mails } from "../models/mails";
+import { Mails, MailType } from "../models/mails";
+import { sendMailToWs } from "../utils/ws";
 
 export const reciveEmail = async () => {
     console.log("start recive email");
@@ -62,7 +63,8 @@ const fwdMail = async (msg: string) => {
         for (const recipient of fullMail.recipients) {
             const user = await Users.findOne({ mailbox: recipient.toLowerCase().trim() });
             if (user) {
-                await Mails.create({ ...data, userId: user._id });
+                const mail = await Mails.create({ ...data, userId: user._id }) as MailType;
+                await sendMailToWs(mail);
                 console.log(`Mail for ${recipient} stored.`);
             }
         }
