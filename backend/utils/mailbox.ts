@@ -1,7 +1,7 @@
 import { Context } from "hono";
 import jwt from "jsonwebtoken"
 import { env } from "../env";
-import { Users } from "../models/users";
+import { Users, UserType } from "../models/users";
 import { uniqueNamesGenerator, adjectives, animals } from 'unique-names-generator';
 
 export const getMailBoxUser = async (c: Context): Promise<User> => {
@@ -123,10 +123,21 @@ export async function userExist(userToken: UserToken) {
     return user;
 }
 
+// verify user and return userToken
 export async function verifyUser(c: Context) {
     const userToken = decodeUserToken(c.req.header('Authorization')?.split(" ")[1]);
     if (!userToken) throw "Invalid request, maybe invalid token";
     const user = await userExist(userToken);
     if (!user) throw "User not found";
     return userToken;
+}
+
+export async function verifyAndGetUser(c: Context): Promise<UserType> {
+    const userToken = decodeUserToken(c.req.header('Authorization')?.split(" ")[1]);
+    if (!userToken) throw "Invalid request, maybe invalid token";
+    const user = await Users.findOne({
+        mailbox: userToken.mailbox.trim().toLowerCase()
+    })
+    if (!user) throw "User not found";
+    return user
 }

@@ -44,6 +44,11 @@ const mailSchema = new mongoose.Schema({
         default: () => new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         index: { expires: 0 }
     },
+    deleted: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 export const Mails = mongoose.model('Mails', mailSchema);
+export type MailType = mongoose.InferSchemaType<typeof mailSchema> & { _id: object }

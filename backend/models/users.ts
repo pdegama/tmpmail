@@ -13,3 +13,5 @@ const userSchema = new mongoose.Schema({
 });
 
 export const Users = mongoose.model('Users', userSchema);
+export type UserType = mongoose.InferSchemaType<typeof userSchema> & { _id: object }
+
