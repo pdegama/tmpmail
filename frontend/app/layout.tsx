@@ -23,7 +23,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "VanishMail",
+  title: "MailTro",
   description: "Disposable temporary email inbox",
   icons: {
     icon: [

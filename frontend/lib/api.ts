@@ -10,7 +10,7 @@ export const getApiBaseURL = (): string => {
     window.location.hostname !== "127.0.0.1";
 
   if (isProduction) {
-    return process.env.NEXT_PUBLIC_API_URL_PROD || "https://tmpmail.api.parthka.dev";
+    return process.env.NEXT_PUBLIC_API_URL_PROD || "https://api.mailtro.site";
   }
 
   return process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";

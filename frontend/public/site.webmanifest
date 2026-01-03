@@ -1,6 +1,6 @@
 {
-    "name": "VanishMail",
-    "short_name": "VanishMail",
+    "name": "MailTro",
+    "short_name": "MailTro",
     "description": "Disposable temporary email inbox",
     "display": "standalone",
     "background_color": "#ffffff",

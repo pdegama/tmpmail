@@ -1,5 +1,5 @@
 {
-  "name": "VanishMail",
+  "name": "MailTro",
   "version": "0.1.0",
   "scripts": {
     "dev": "bunx next dev -p 4000",
