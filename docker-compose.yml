@@ -17,6 +17,17 @@ services:
     depends_on:
       - rabbitmq
 
+  frontend:
+    build: ./frontend
+    ports:
+      - "4000:4000"
+    environment:
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - NEXT_PUBLIC_API_URL_PROD=${NEXT_PUBLIC_API_URL_PROD}
+      - NODE_ENV=production
+    depends_on:
+      - backend
+
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
