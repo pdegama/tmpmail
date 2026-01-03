@@ -4,7 +4,6 @@ import { useState } from "react";
 import { TempMailMessage } from "@/types/mail";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { ArrowLeft, Trash2, Download } from "lucide-react";
 import { formatDate, formatFileSize, sanitizeHtml } from "@/lib/utils";
 
@@ -54,7 +53,7 @@ export default function InboxDetailView({ message, onBack, onDelete }: Props) {
   };
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex flex-col">
       {/* Header with Back and Delete buttons */}
       <div className="flex items-center justify-between border-b px-4 py-3 sm:px-6">
         <Button
@@ -78,137 +77,135 @@ export default function InboxDetailView({ message, onBack, onDelete }: Props) {
         </Button>
       </div>
 
-      {/* Content area - scrollable */}
-      <ScrollArea className="flex-1 overflow-y-auto" type="always">
-        <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6">
-          {/* Sender Info */}
-          <div className="mb-6">
-            <div className="mb-2">
-              <h2 className="text-lg font-semibold sm:text-xl">
-                {message.sender.name}
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                {message.sender.email}
-              </p>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {formatDate(message.receivedAt)}
+      {/* Content area */}
+      <div className="mx-0 sm:mx-8 max-w-5xl px-4 py-6 sm:px-6">
+        {/* Sender Info */}
+        <div className="mb-6">
+          <div className="mb-2">
+            <h2 className="text-lg font-semibold sm:text-xl">
+              {message.sender.name}
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              {message.sender.address}
             </p>
           </div>
+          <p className="text-xs text-muted-foreground">
+            {formatDate(message.receivedAt)}
+          </p>
+        </div>
 
-          {/* Subject */}
-          <div className="mb-6 border-b pb-4">
-            <h1 className="text-xl font-bold sm:text-2xl">{message.subject}</h1>
-          </div>
+        {/* Subject */}
+        <div className="mb-6 border-b pb-4">
+          <h1 className="text-xl font-bold sm:text-2xl">{message.subject}</h1>
+        </div>
 
-          {/* Email Content */}
-          <div className="prose prose-sm dark:prose-invert max-w-none">
-            {message.htmlContent ? (
-              <div
-                className="email-content"
-                dangerouslySetInnerHTML={{
-                  __html: sanitizeHtml(message.htmlContent),
-                }}
-                style={{
-                  fontFamily: "inherit",
-                  lineHeight: "1.6",
-                }}
-              />
-            ) : (
-              <div className="whitespace-pre-wrap text-sm leading-relaxed">
-                {message.textContent || "No content available."}
-              </div>
-            )}
-          </div>
-
-          {/* Attachments - Horizontal row at the end */}
-          {message.attachments && message.attachments.length > 0 && (
-            <div className="mt-8 border-t pt-6">
-              <h3 className="mb-4 text-left text-sm font-semibold">
-                Attachments ({message.attachments.length})
-              </h3>
-
-              {/* All attachments in a horizontal row */}
-              <div className="flex flex-wrap gap-4">
-                {message.attachments.map((attachment) => (
-                  <div
-                    key={attachment.id}
-                    className="group relative"
-                    onMouseEnter={() => setHoveredAttachment(attachment.id)}
-                    onMouseLeave={() => setHoveredAttachment(null)}
-                  >
-                    {isImage(attachment.contentType) ? (
-                      // Image attachment with preview
-                      <>
-                        <div className="relative h-32 w-32 overflow-hidden rounded-lg border bg-muted">
-                          <img
-                            src={attachment.url}
-                            alt={attachment.filename}
-                            className="h-full w-32 object-cover"
-                          />
-                          {hoveredAttachment === attachment.id && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                              <Button
-                                size="icon"
-                                variant="secondary"
-                                className="h-10 w-10 cursor-pointer"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDownload(attachment.url, attachment.filename);
-                                }}
-                              >
-                                <Download className="h-5 w-5" />
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                        <p className="mt-2 w-32 truncate text-xs text-muted-foreground" title={attachment.filename}>
-                          {attachment.filename}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {formatFileSize(attachment.size)}
-                        </p>
-                      </>
-                    ) : (
-                      // Document/file attachment with box
-                      <>
-                        <div className="relative flex h-32 w-32 flex-col items-center justify-center overflow-hidden rounded-lg border bg-muted/50 p-3">
-                          <div className="mb-2 text-center">
-                            <Badge variant="secondary" className="text-[10px] font-semibold">
-                              {getFileExtension(attachment.contentType)}
-                            </Badge>
-                          </div>
-                          <p className="mb-auto line-clamp-2 max-w-full break-words text-center text-xs font-medium" title={attachment.filename}>
-                            {attachment.filename}
-                          </p>
-                          <p className="mt-1 text-[10px] text-muted-foreground">
-                            {formatFileSize(attachment.size)}
-                          </p>
-                          {hoveredAttachment === attachment.id && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                              <Button
-                                size="icon"
-                                variant="secondary"
-                                className="h-10 w-10 cursor-pointer"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDownload(attachment.url, attachment.filename);
-                                }}
-                              >
-                                <Download className="h-5 w-5" />
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                ))}
-              </div>
+        {/* Email Content */}
+        <div className="prose prose-sm dark:prose-invert max-w-none">
+          {message.htmlContent ? (
+            <div
+              className="email-content"
+              dangerouslySetInnerHTML={{
+                __html: sanitizeHtml(message.htmlContent),
+              }}
+              style={{
+                fontFamily: "inherit",
+                lineHeight: "1.6",
+              }}
+            />
+          ) : (
+            <div className="whitespace-pre-wrap text-sm leading-relaxed">
+              {message.textContent || "No content available."}
             </div>
           )}
         </div>
-      </ScrollArea>
+
+        {/* Attachments - Horizontal row at the end */}
+        {message.attachments && message.attachments.length > 0 && (
+          <div className="mt-8 border-t pt-6">
+            <h3 className="mb-4 text-left text-sm font-semibold">
+              Attachments ({message.attachments.length})
+            </h3>
+
+            {/* All attachments in a horizontal row */}
+            <div className="flex flex-wrap gap-4">
+              {message.attachments.map((attachment) => (
+                <div
+                  key={attachment.id}
+                  className="group relative"
+                  onMouseEnter={() => setHoveredAttachment(attachment.id)}
+                  onMouseLeave={() => setHoveredAttachment(null)}
+                >
+                  {isImage(attachment.contentType) ? (
+                    // Image attachment with preview
+                    <>
+                      <div className="relative h-32 w-32 overflow-hidden rounded-lg border bg-muted">
+                        <img
+                          src={attachment.url}
+                          alt={attachment.filename}
+                          className="h-full w-32 object-cover"
+                        />
+                        {hoveredAttachment === attachment.id && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                            <Button
+                              size="icon"
+                              variant="secondary"
+                              className="h-10 w-10 cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDownload(attachment.url, attachment.filename);
+                              }}
+                            >
+                              <Download className="h-5 w-5" />
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                      <p className="mt-2 w-32 truncate text-xs text-muted-foreground" title={attachment.filename}>
+                        {attachment.filename}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {formatFileSize(attachment.size)}
+                      </p>
+                    </>
+                  ) : (
+                    // Document/file attachment with box
+                    <>
+                      <div className="relative flex h-32 w-32 flex-col items-center justify-center overflow-hidden rounded-lg border bg-muted/50 p-3">
+                        <div className="mb-2 text-center">
+                          <Badge variant="secondary" className="text-[10px] font-semibold">
+                            {getFileExtension(attachment.contentType)}
+                          </Badge>
+                        </div>
+                        <p className="mb-auto line-clamp-2 max-w-full break-words text-center text-xs font-medium" title={attachment.filename}>
+                          {attachment.filename}
+                        </p>
+                        <p className="mt-1 text-[10px] text-muted-foreground">
+                          {formatFileSize(attachment.size)}
+                        </p>
+                        {hoveredAttachment === attachment.id && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                            <Button
+                              size="icon"
+                              variant="secondary"
+                              className="h-10 w-10 cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDownload(attachment.url, attachment.filename);
+                              }}
+                            >
+                              <Download className="h-5 w-5" />
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

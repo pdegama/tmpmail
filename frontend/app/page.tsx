@@ -14,11 +14,17 @@ export default function Home() {
   } = useTempAddress();
 
   const {
-    data: messages = [],
+    messages = [],
     isLoading: messagesLoading,
     isRefetching: messagesRefetching,
     refetchMessages,
+    hasNextPage = false,
+    isFetchingNextPage = false,
+    fetchNextPage,
+    data: queryData,
   } = useMessages(email);
+
+  const totalEmails = queryData?.pages[0]?.totalEmails;
 
   if (addressLoading) {
     return (
@@ -49,7 +55,15 @@ export default function Home() {
             <InboxListSkeleton />
           </div>
         ) : (
-          <InboxList messages={messages} isLoading={messagesLoading} />
+          <InboxList
+            messages={messages}
+            isLoading={messagesLoading}
+            mailboxEmail={email}
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+            fetchNextPage={fetchNextPage}
+            totalEmails={totalEmails}
+          />
         )}
       </div>
     </main>

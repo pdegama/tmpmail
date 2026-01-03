@@ -1,52 +1,68 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { MOCK_API_DELAY } from "@/lib/constants";
-import { TempMailMessage } from "@/types/mail";
+import { emailService } from "@/lib/services/email.service";
 
-export function useDeleteMessage() {
+export function useDeleteMessage(mailboxEmail?: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (messageId: string) => {
-      // Mock API call to delete message
-      await new Promise((r) => setTimeout(r, MOCK_API_DELAY.FAST));
-      return messageId;
+    mutationFn: async (emailId: string) => {
+      await emailService.deleteEmail(emailId);
+      return emailId;
     },
-    onSuccess: (messageId) => {
-      // Optimistically update the messages cache
-      queryClient.setQueriesData<Array<{ id: string }>>(
-        { queryKey: ["messages"] },
-        (oldData) => {
-          if (!oldData) return oldData;
-          return oldData.filter((msg) => msg.id !== messageId);
-        }
-      );
+    onSuccess: (emailId) => {
+      if (mailboxEmail) {
+        // Remove email from infinite query cache
+        queryClient.setQueryData(
+          ["emails", mailboxEmail],
+          (oldData: any) => {
+            if (!oldData?.pages) return oldData;
 
-      // Also invalidate to refetch if needed
-      queryClient.invalidateQueries({ queryKey: ["messages"] });
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page: any) => ({
+                ...page,
+                emails: page.emails.filter((e: any) => e._id !== emailId),
+                totalEmails: Math.max(0, (page.totalEmails || 0) - 1),
+              })),
+            };
+          }
+        );
+      }
+
+      // Also invalidate to ensure consistency
+      queryClient.invalidateQueries({ queryKey: ["emails"] });
     },
   });
 }
 
-export function useMarkAsRead() {
+export function useMarkAsRead(mailboxEmail?: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (messageId: string) => {
-      // Mock API call to mark message as read
-      await new Promise((r) => setTimeout(r, MOCK_API_DELAY.FAST));
-      return messageId;
+    mutationFn: async (emailId: string) => {
+      await emailService.markAsRead(emailId);
+      return emailId;
     },
-    onSuccess: (messageId) => {
-      // Optimistically update the messages cache to mark as read
-      queryClient.setQueriesData<TempMailMessage[]>(
-        { queryKey: ["messages"] },
-        (oldData) => {
-          if (!oldData) return oldData;
-          return oldData.map((msg) =>
-            msg.id === messageId ? { ...msg, isRead: true } : msg
-          );
-        }
-      );
+    onSuccess: (emailId) => {
+      if (mailboxEmail) {
+        // Update email in infinite query cache
+        queryClient.setQueryData(
+          ["emails", mailboxEmail],
+          (oldData: any) => {
+            if (!oldData?.pages) return oldData;
+
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page: any) => ({
+                ...page,
+                emails: page.emails.map((e: any) =>
+                  e._id === emailId ? { ...e, read: true } : e
+                ),
+              })),
+            };
+          }
+        );
+      }
     },
   });
 }

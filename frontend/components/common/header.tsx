@@ -12,21 +12,21 @@ import {
 import { useEffect, useState } from "react";
 
 export function Header() {
-    const { theme, setTheme } = useTheme();
-    const [mounted, setMounted] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
-    // Avoid hydration mismatch
-    useEffect(() => {
-        setMounted(true);
-    }, []);
+  // Avoid hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   if (!mounted) {
     return (
       <header className="w-full border-b bg-background">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center gap-2">
-                    <span className="text-lg font-semibold tracking-wider">
-              AnonyMail
+          <div className="flex items-center gap-2">
+            <span className="text-lg font-semibold tracking-wider">
+              VanishMail
             </span>
           </div>
           <div className="h-9 w-9" />
@@ -43,36 +43,36 @@ export function Header() {
         {/* Left */}
         <div className="flex items-center gap-2">
           <span className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-                        AnonyMail
-                    </span>
-                </div>
+            VanishMail
+          </span>
+        </div>
 
-                {/* Right */}
-                <div className="flex items-center gap-2">
+        {/* Right */}
+        <div className="flex items-center gap-2">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setTheme(isDark ? "light" : "dark")}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setTheme(isDark ? "light" : "dark")}
                   className="h-9 w-9 cursor-pointer"
                   aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-                    >
+                >
                   {isDark ? (
                     <Sun className="h-5 w-5" />
                   ) : (
                     <Moon className="h-5 w-5" />
                   )}
-                    </Button>
+                </Button>
               </TooltipTrigger>
               <TooltipContent>
                 {isDark ? "Switch to light mode" : "Switch to dark mode"}
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-                </div>
-            </div>
-        </header>
-    );
+        </div>
+      </div>
+    </header>
+  );
 }

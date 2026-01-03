@@ -36,9 +36,19 @@ export function useTempAddress() {
       };
     },
     onSuccess: (data) => {
+      // Preserve availableDomains from existing cache
+      const existingData = queryClient.getQueryData<{
+        email: string;
+        expiredOn?: string;
+        availableDomains: string[];
+        token: string;
+      }>(["temp-address", token]);
+      
       queryClient.setQueryData(["temp-address", data.token], {
         email: data.email,
         token: data.token,
+        availableDomains: existingData?.availableDomains || [],
+        expiredOn: existingData?.expiredOn,
       });
       queryClient.removeQueries({ queryKey: ["messages"] });
     },
@@ -57,9 +67,19 @@ export function useTempAddress() {
       };
     },
     onSuccess: (data) => {
+      // Preserve availableDomains from existing cache
+      const existingData = queryClient.getQueryData<{
+        email: string;
+        expiredOn?: string;
+        availableDomains: string[];
+        token: string;
+      }>(["temp-address", token]);
+      
       queryClient.setQueryData(["temp-address", data.token], {
         email: data.email,
         token: data.token,
+        availableDomains: existingData?.availableDomains || [],
+        expiredOn: existingData?.expiredOn,
       });
       queryClient.removeQueries({ queryKey: ["messages"] });
     },
