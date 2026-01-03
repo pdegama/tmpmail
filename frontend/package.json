@@ -1,12 +1,11 @@
 {
   "name": "VanishMail",
   "version": "0.1.0",
-  "private": true,
   "scripts": {
-    "dev": "next dev -p 4000",
-    "build": "next build",
-    "start": "next start -p 4000",
-    "lint": "eslint"
+    "dev": "bunx next dev -p 4000",
+    "build": "bunx next build",
+    "start": "bunx next start -p 4000",
+    "lint": "bunx eslint"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",

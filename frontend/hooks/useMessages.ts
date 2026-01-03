@@ -1,11 +1,16 @@
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
-import { TempMailMessage, mapEmailToTempMailMessage } from "@/types/mail";
+import { useCallback } from "react";
+import { TempMailMessage, mapEmailToTempMailMessage, type Email } from "@/types/mail";
 import { emailService } from "@/lib/services/email.service";
+import { useAuth } from "@/providers/auth-provider";
+import { useWebSocket } from "./useWebSocket";
+import { insertEmailAtTop } from "@/lib/utils/email-cache";
 
 const DEFAULT_LIMIT = 10;
 
 export function useMessages(email?: string) {
   const queryClient = useQueryClient();
+  const { token } = useAuth();
 
   const query = useInfiniteQuery({
     queryKey: ["emails", email],
@@ -22,8 +27,25 @@ export function useMessages(email?: string) {
       return lastPage.isLast ? undefined : lastPage.afterId;
     },
     initialPageParam: undefined as string | undefined,
-    // WebSocket integration will handle real-time updates later
-    // refetchInterval: 10_000,
+    // WebSocket integration handles real-time updates
+  });
+
+  // Handle WebSocket email updates
+  const handleEmailReceived = useCallback(
+    (newEmail: Email) => {
+      if (newEmail && email) {
+        insertEmailAtTop(queryClient, email, newEmail);
+      }
+    },
+    [queryClient, email]
+  );
+
+  // WebSocket connection for real-time updates
+  const { isConnected: isWebSocketConnected } = useWebSocket({
+    mailboxEmail: email,
+    token: token || null,
+    enabled: !!email && !!token,
+    onEmailReceived: handleEmailReceived,
   });
 
   // Flatten pages and map to TempMailMessage format
@@ -37,6 +59,7 @@ export function useMessages(email?: string) {
     messages,
     // Expose refetch for manual refresh
     refetchMessages: query.refetch,
+    isWebSocketConnected,
   };
 }
 
