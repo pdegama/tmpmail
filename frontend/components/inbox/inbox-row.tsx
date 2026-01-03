@@ -70,8 +70,11 @@ export default function InboxRow({
           {message.subject}
         </div>
         {attachmentCount > 0 && (
-          <Badge variant="secondary" className="shrink-0 text-sm">
-            {attachmentCount}
+          <Badge 
+            variant="secondary" 
+            className="shrink-0 rounded-full bg-primary/10 text-primary hover:bg-primary/20 px-2.5 py-0.5 text-xs font-medium"
+          >
+            {attachmentCount} {attachmentCount === 1 ? "attachment" : "attachments"}
           </Badge>
         )}
       </div>

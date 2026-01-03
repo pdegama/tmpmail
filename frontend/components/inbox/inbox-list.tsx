@@ -5,10 +5,8 @@ import { TempMailMessage } from "@/types/mail";
 import InboxRow from "./inbox-row";
 import InboxEmpty from "./inbox-empty";
 import InboxDetailView from "./inbox-detail-view";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { useDeleteMessage, useMarkAsRead } from "@/hooks/useMessageActions";
-import { MAX_INBOX_HEIGHT_MOBILE } from "@/lib/constants";
 
 type Props = {
   messages: TempMailMessage[];
@@ -55,12 +53,7 @@ export default function InboxList({ messages, isLoading }: Props) {
 
   return (
     <section className="mx-auto w-full max-w-4xl px-4 sm:px-6">
-      <div
-        className="flex flex-col overflow-hidden rounded-lg border-2 border-border"
-        style={{
-          height: selectedMessage ? "600px" : "auto",
-        }}
-      >
+      <div className="flex flex-col rounded-lg border-2 border-border">
         {selectedMessage ? (
           <InboxDetailView
             message={selectedMessage}
@@ -76,29 +69,27 @@ export default function InboxList({ messages, isLoading }: Props) {
               <span className="text-right">Actions</span>
             </div>
 
-            {/* Messages List - Scrollable - Show ~6 emails */}
-            <ScrollArea className="h-[384px] sm:h-[420px]" type="always">
-              {messages.length === 0 ? (
-                <InboxEmpty />
-              ) : (
-                <>
-                  {messages.map((msg, index) => (
-                    <div key={msg.id}>
-                      <InboxRow
-                        message={msg}
-                        isSelected={selectedMessageId === msg.id}
-                        onClick={() => handleMessageSelect(msg.id)}
-                        onDelete={(e) => {
-                          e.stopPropagation();
-                          handleDeleteMessage(msg.id);
-                        }}
-                      />
-                      {index !== messages.length - 1 && <Separator />}
-                    </div>
-                  ))}
-                </>
-              )}
-            </ScrollArea>
+            {/* Messages List */}
+            {messages.length === 0 ? (
+              <InboxEmpty />
+            ) : (
+              <>
+                {messages.map((msg, index) => (
+                  <div key={msg.id}>
+                    <InboxRow
+                      message={msg}
+                      isSelected={selectedMessageId === msg.id}
+                      onClick={() => handleMessageSelect(msg.id)}
+                      onDelete={(e) => {
+                        e.stopPropagation();
+                        handleDeleteMessage(msg.id);
+                      }}
+                    />
+                    {index !== messages.length - 1 && <Separator />}
+                  </div>
+                ))}
+              </>
+            )}
           </>
         )}
       </div>

@@ -7,8 +7,24 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Copy, RefreshCcw, Shuffle, Trash2, Loader2 } from "lucide-react";
-import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Copy, RefreshCcw, Shuffle, Trash2, Loader2, Edit } from "lucide-react";
+import { useState, useEffect } from "react";
 import { useTempAddress } from "@/hooks/useTempAddress";
 
 type Props = {
@@ -25,6 +41,7 @@ export default function TempAddressCard({
   isRefreshing = false,
 }: Props) {
   const [copied, setCopied] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [customEmailPrefix, setCustomEmailPrefix] = useState("");
   const [selectedDomain, setSelectedDomain] = useState(
     availableDomains[0] || ""
@@ -38,6 +55,13 @@ export default function TempAddressCard({
     isDeleting,
   } = useTempAddress();
 
+  // Update selectedDomain when availableDomains change
+  useEffect(() => {
+    if (availableDomains.length > 0 && !availableDomains.includes(selectedDomain)) {
+      setSelectedDomain(availableDomains[0]);
+    }
+  }, [availableDomains, selectedDomain]);
+
   const handleCopy = async () => {
     await navigator.clipboard.writeText(email);
     setCopied(true);
@@ -49,6 +73,7 @@ export default function TempAddressCard({
       const fullEmail = `${customEmailPrefix.trim()}@${selectedDomain}`;
       changeAddress(fullEmail);
       setCustomEmailPrefix("");
+      setDialogOpen(false);
     }
   };
 
@@ -62,9 +87,6 @@ export default function TempAddressCard({
     }
   };
 
-  const updateSelectedDomain = (domain: string) => {
-    setSelectedDomain(domain);
-  };
 
   return (
     <div className="mx-auto w-full max-w-2xl px-4 py-2 text-center sm:px-6">
@@ -97,51 +119,6 @@ export default function TempAddressCard({
         </TooltipProvider>
       </div>
 
-      {/* Domain Selection and Custom Email Input */}
-      {availableDomains.length > 0 && (
-        <div className="mt-4 space-y-3">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-center">
-            <div className="flex-1">
-              <label
-                htmlFor="email-prefix"
-                className="mb-1 block text-sm font-medium text-muted-foreground"
-              >
-                Custom Email Prefix
-              </label>
-              <div className="flex gap-2">
-                <input
-                  id="email-prefix"
-                  type="text"
-                  value={customEmailPrefix}
-                  onChange={(e) => setCustomEmailPrefix(e.target.value)}
-                  placeholder="Enter email prefix"
-                  className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && customEmailPrefix.trim()) {
-                      handleChange();
-                    }
-                  }}
-                />
-                <span className="flex items-center text-sm text-muted-foreground">
-                  @
-                </span>
-                <select
-                  value={selectedDomain}
-                  onChange={(e) => updateSelectedDomain(e.target.value)}
-                  className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                >
-                  {availableDomains.map((domain) => (
-                    <option key={domain} value={domain}>
-                      {domain}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Actions */}
       <div className="mt-4 flex flex-wrap justify-center gap-3">
         <TooltipProvider>
@@ -166,29 +143,96 @@ export default function TempAddressCard({
           </Tooltip>
         </TooltipProvider>
 
-        {customEmailPrefix.trim() && selectedDomain && (
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleChange}
-                  disabled={isChanging || isShuffling || isDeleting || isRefreshing}
-                  className="gap-2 cursor-pointer"
-                >
-                  {isChanging ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Shuffle className="h-4 w-4" />
-                  )}
-                  <span>Change</span>
-                </Button>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={isChanging || isShuffling || isDeleting || isRefreshing || availableDomains.length === 0}
+                    className="gap-2 cursor-pointer"
+                  >
+                    <Edit className="h-4 w-4" />
+                    <span>Customize Email</span>
+                  </Button>
+                </DialogTrigger>
               </TooltipTrigger>
-              <TooltipContent>Change to custom email</TooltipContent>
+              <TooltipContent>Change to custom email address</TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        )}
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Change Email Address</DialogTitle>
+              <DialogDescription>
+                Enter a custom email prefix and select a domain
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <label
+                  htmlFor="email-prefix"
+                  className="text-sm font-medium text-foreground"
+                >
+                  Email Prefix
+                </label>
+                <input
+                  id="email-prefix"
+                  type="text"
+                  value={customEmailPrefix}
+                  onChange={(e) => setCustomEmailPrefix(e.target.value)}
+                  placeholder="Enter email prefix"
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && customEmailPrefix.trim() && selectedDomain) {
+                      handleChange();
+                    }
+                  }}
+                />
+              </div>
+              <div className="space-y-2">
+                <label
+                  htmlFor="domain-select"
+                  className="text-sm font-medium text-foreground"
+                >
+                  Domain
+                </label>
+                <Select
+                  value={selectedDomain}
+                  onValueChange={setSelectedDomain}
+                >
+                  <SelectTrigger id="domain-select">
+                    <SelectValue placeholder="Select a domain" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableDomains.map((domain) => (
+                      <SelectItem key={domain} value={domain}>
+                        @{domain}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                onClick={handleChange}
+                disabled={!customEmailPrefix.trim() || !selectedDomain || isChanging || isShuffling || isDeleting || isRefreshing}
+                className="gap-2 cursor-pointer"
+              >
+                {isChanging ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Changing...</span>
+                  </>
+                ) : (
+                  <span>Change</span>
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         <TooltipProvider>
           <Tooltip>
@@ -212,7 +256,8 @@ export default function TempAddressCard({
           </Tooltip>
         </TooltipProvider>
 
-        <TooltipProvider>
+        {/* Delete button commented out for now */}
+        {/* <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -232,7 +277,7 @@ export default function TempAddressCard({
             </TooltipTrigger>
             <TooltipContent>Delete this address</TooltipContent>
           </Tooltip>
-        </TooltipProvider>
+        </TooltipProvider> */}
       </div>
     </div>
   );

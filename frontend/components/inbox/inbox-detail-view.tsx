@@ -4,7 +4,6 @@ import { useState } from "react";
 import { TempMailMessage } from "@/types/mail";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { ArrowLeft, Trash2, Download } from "lucide-react";
 import { formatDate, formatFileSize, sanitizeHtml } from "@/lib/utils";
 
@@ -54,7 +53,7 @@ export default function InboxDetailView({ message, onBack, onDelete }: Props) {
   };
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex flex-col">
       {/* Header with Back and Delete buttons */}
       <div className="flex items-center justify-between border-b px-4 py-3 sm:px-6">
         <Button
@@ -78,9 +77,8 @@ export default function InboxDetailView({ message, onBack, onDelete }: Props) {
         </Button>
       </div>
 
-      {/* Content area - scrollable */}
-      <ScrollArea className="flex-1 overflow-y-auto" type="always">
-        <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6">
+      {/* Content area */}
+      <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6">
           {/* Sender Info */}
           <div className="mb-6">
             <div className="mb-2">
@@ -208,7 +206,6 @@ export default function InboxDetailView({ message, onBack, onDelete }: Props) {
             </div>
           )}
         </div>
-      </ScrollArea>
     </div>
   );
 }
