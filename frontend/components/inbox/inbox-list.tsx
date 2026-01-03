@@ -5,29 +5,45 @@ import { TempMailMessage } from "@/types/mail";
 import InboxRow from "./inbox-row";
 import InboxEmpty from "./inbox-empty";
 import InboxDetailView from "./inbox-detail-view";
+import InboxPagination from "./inbox-pagination";
 import { Separator } from "@/components/ui/separator";
 import { useDeleteMessage, useMarkAsRead } from "@/hooks/useMessageActions";
 
 type Props = {
   messages: TempMailMessage[];
   isLoading?: boolean;
+  mailboxEmail?: string;
+  hasNextPage?: boolean;
+  isFetchingNextPage?: boolean;
+  fetchNextPage?: () => void;
+  totalEmails?: number;
 };
 
-export default function InboxList({ messages, isLoading }: Props) {
+export default function InboxList({
+  messages,
+  isLoading,
+  mailboxEmail,
+  hasNextPage = false,
+  isFetchingNextPage = false,
+  fetchNextPage,
+  totalEmails,
+}: Props) {
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(
     null
   );
-  const deleteMessage = useDeleteMessage();
-  const markAsRead = useMarkAsRead();
+  const deleteMessage = useDeleteMessage(mailboxEmail);
+  const markAsRead = useMarkAsRead(mailboxEmail);
 
   const selectedMessage = selectedMessageId
-    ? messages.find((msg) => msg.id === selectedMessageId)
+    ? messages.find((msg) => (msg._id || msg.id) === selectedMessageId)
     : null;
 
   const handleMessageSelect = (messageId: string) => {
     setSelectedMessageId(messageId);
     // Mark message as read when opened
-    const message = messages.find((msg) => msg.id === messageId);
+    const message = messages.find(
+      (msg) => (msg._id || msg.id) === messageId
+    );
     if (message && !message.isRead) {
       markAsRead.mutate(messageId);
     }
@@ -58,7 +74,7 @@ export default function InboxList({ messages, isLoading }: Props) {
           <InboxDetailView
             message={selectedMessage}
             onBack={handleBack}
-            onDelete={() => handleDeleteMessage(selectedMessage.id)}
+            onDelete={() => handleDeleteMessage(selectedMessage._id || selectedMessage.id)}
           />
         ) : (
           <>
@@ -75,20 +91,30 @@ export default function InboxList({ messages, isLoading }: Props) {
             ) : (
               <>
                 {messages.map((msg, index) => (
-                  <div key={msg.id}>
+                  <div key={msg._id || msg.id}>
                     <InboxRow
                       message={msg}
-                      isSelected={selectedMessageId === msg.id}
-                      onClick={() => handleMessageSelect(msg.id)}
+                      mailboxEmail={mailboxEmail}
+                      isSelected={selectedMessageId === (msg._id || msg.id)}
+                      onClick={() => handleMessageSelect(msg._id || msg.id)}
                       onDelete={(e) => {
                         e.stopPropagation();
-                        handleDeleteMessage(msg.id);
+                        handleDeleteMessage(msg._id || msg.id);
                       }}
                     />
                     {index !== messages.length - 1 && <Separator />}
                   </div>
                 ))}
               </>
+            )}
+            {/* Pagination */}
+            {messages.length > 0 && fetchNextPage && (
+              <InboxPagination
+                hasNextPage={hasNextPage}
+                isFetchingNextPage={isFetchingNextPage}
+                fetchNextPage={fetchNextPage}
+                totalEmails={totalEmails}
+              />
             )}
           </>
         )}

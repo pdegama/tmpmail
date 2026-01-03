@@ -23,7 +23,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AnonyMail",
+  title: "VanishMail",
   description: "Disposable temporary email inbox",
 };
 

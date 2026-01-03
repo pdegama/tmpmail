@@ -6,6 +6,10 @@ export const API_ENDPOINTS = {
   MAILBOX: "/api/mailbox",
   MAILBOX_CHANGE: "/api/mailbox/change",
   MAILBOX_SHUFFLE: "/api/mailbox/shuffle",
+  EMAIL_LIST: "/api/list",
+  EMAIL_READ: (id: string) => `/api/mail/read/${id}`,
+  EMAIL_UNREAD: (id: string) => `/api/mail/unread/${id}`,
+  EMAIL_DELETE: (id: string) => `/api/mail/delete/${id}`,
 } as const;
 
 // UI constants

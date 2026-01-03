@@ -1,7 +1,7 @@
 "use client";
 
 import { TempMailMessage } from "@/types/mail";
-import { Eye, Trash2 } from "lucide-react";
+import { Eye, Trash2, Mail, MailOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -11,9 +11,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { useEmailReadToggle } from "@/hooks/useEmailReadToggle";
 
 type Props = {
   message: TempMailMessage;
+  mailboxEmail?: string;
   isSelected?: boolean;
   onClick: () => void;
   onDelete: (e: React.MouseEvent) => void;
@@ -21,11 +23,16 @@ type Props = {
 
 export default function InboxRow({
   message,
+  mailboxEmail,
   isSelected = false,
   onClick,
   onDelete,
 }: Props) {
   const attachmentCount = message.attachments?.length || 0;
+  const { isRead, toggleReadState, isPending: isTogglePending } = useEmailReadToggle(
+    message,
+    mailboxEmail
+  );
 
   const handleRowClick = () => {
     onClick();
@@ -41,12 +48,15 @@ export default function InboxRow({
     onDelete(e);
   };
 
-  const isRead = message.isRead ?? false;
+  const handleReadToggleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleReadState();
+  };
 
   return (
     <div
       className={cn(
-        "grid grid-cols-[2fr_3fr_1fr] items-center gap-3 px-4 py-3.5 transition-colors sm:gap-4 sm:px-6 sm:py-4",
+        "grid grid-cols-[2fr_3fr_auto] items-center gap-3 px-4 py-3.5 transition-colors sm:gap-4 sm:px-6 sm:py-4",
         isSelected
           ? "bg-muted"
           : "hover:bg-muted/50 cursor-pointer",
@@ -56,11 +66,11 @@ export default function InboxRow({
     >
       {/* Sender */}
       <div className="min-w-0 truncate">
-        <div className="truncate text-base font-medium sm:text-lg">
+        <div className="truncate text-xs font-medium sm:text-lg">
           {message.sender.name}
         </div>
-        <div className="truncate text-sm text-muted-foreground sm:text-base">
-          {message.sender.email}
+        <div className="truncate text-xs font-light text-muted-foreground sm:text-sm">
+          {message.sender.address}
         </div>
       </div>
 
@@ -70,8 +80,8 @@ export default function InboxRow({
           {message.subject}
         </div>
         {attachmentCount > 0 && (
-          <Badge 
-            variant="secondary" 
+          <Badge
+            variant="secondary"
             className="shrink-0 rounded-full bg-primary/10 text-primary hover:bg-primary/20 px-2.5 py-0.5 text-xs font-medium"
           >
             {attachmentCount} {attachmentCount === 1 ? "attachment" : "attachments"}
@@ -81,6 +91,29 @@ export default function InboxRow({
 
       {/* Actions */}
       <div className="flex justify-end gap-0.5 sm:gap-1">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-8 w-8 cursor-pointer sm:h-9 sm:w-9"
+                onClick={handleReadToggleClick}
+                disabled={isTogglePending}
+              >
+                {isRead ? (
+                  <MailOpen className="h-4 w-4 sm:h-5 sm:w-5" />
+                ) : (
+                  <Mail className="h-4 w-4 sm:h-5 sm:w-5" />
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              {isRead ? "Mark as unread" : "Mark as read"}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
