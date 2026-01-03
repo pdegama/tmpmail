@@ -25,7 +25,7 @@ ws.get("/", upgradeWebSocket(c => {
         },
         onClose: (_, ws) => {
             // @ts-ignore
-            ws.raw.onClose()
+            ws.raw.onClose && ws.raw.onClose()
         },
     }
 }))
