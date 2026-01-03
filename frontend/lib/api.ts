@@ -1,7 +1,7 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { authStorage } from "./auth-storage";
 
-const getApiBaseURL = (): string => {
+export const getApiBaseURL = (): string => {
   if (typeof window === "undefined") {
     return process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
   }

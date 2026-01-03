@@ -1,10 +1,13 @@
+import { getApiBaseURL } from "../api";
+
 /**
  * Get WebSocket URL
  * For now, always use production URL since local WebSocket is not configured
  * Convert https:// to wss:// for WebSocket connection
  */
 export function getWebSocketURL(): string {
-    const baseUrl = `${process.env.NEXT_PUBLIC_API_URL_PROD}/api/ws`;
+    const apiUrl = getApiBaseURL()
+    const baseUrl = `${apiUrl}/api/ws`;
     // Convert https:// to wss:// for WebSocket
     return baseUrl.replace(/^https:/, "wss:");
 }
