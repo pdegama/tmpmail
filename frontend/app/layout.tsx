@@ -74,10 +74,9 @@ export default function RootLayout({
             </AuthProvider>
           </QueryProvider>
         </ThemeProvider>
-        {process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID &&
-          process.env.NODE_ENV === "production" && (
-            <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID} />
-          )}
+        {process.env.NODE_ENV === "production" && (
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || "G-QRV5QX4MMB"} />
+        )}
       </body>
     </html>
   );
