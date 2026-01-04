@@ -2,6 +2,7 @@
 import "./globals.css";
 // Types
 import type { Metadata } from "next";
+import { GoogleAnalytics } from "@next/third-parties/google";
 // Providers
 import { ThemeProvider } from "@/providers/theme-provider";
 import QueryProvider from "@/providers/query-provider";
@@ -73,6 +74,10 @@ export default function RootLayout({
             </AuthProvider>
           </QueryProvider>
         </ThemeProvider>
+        {process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID &&
+          process.env.NODE_ENV === "production" && (
+            <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID} />
+          )}
       </body>
     </html>
   );

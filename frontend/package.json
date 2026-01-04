@@ -8,6 +8,7 @@
     "lint": "bunx eslint"
   },
   "dependencies": {
+    "@next/third-parties": "^16.1.1",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-scroll-area": "^1.2.10",
     "@radix-ui/react-select": "^2.2.6",
