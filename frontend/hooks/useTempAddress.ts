@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/providers/auth-provider";
 import { mailboxService } from "@/lib/services/mailbox.service";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 export function useTempAddress() {
   const queryClient = useQueryClient();
@@ -43,7 +45,7 @@ export function useTempAddress() {
         availableDomains: string[];
         token: string;
       }>(["temp-address", token]);
-      
+
       queryClient.setQueryData(["temp-address", data.token], {
         email: data.email,
         token: data.token,
@@ -51,6 +53,20 @@ export function useTempAddress() {
         expiredOn: existingData?.expiredOn,
       });
       queryClient.removeQueries({ queryKey: ["messages"] });
+      toast.success("Email address changed successfully");
+    },
+    onError: (error: AxiosError) => {
+      let errorMessage = "Failed to change email address. Please try again.";
+
+      if (error.response?.status === 400) {
+        // Extract error message from backend response
+        const responseData = error.response.data as { message?: string; error?: string };
+        errorMessage = responseData?.message || responseData?.error || "This email address is already taken. Please choose a different one.";
+      } else if (error.response?.status) {
+        errorMessage = `Error: ${error.response.status}. Please try again.`;
+      }
+
+      toast.error(errorMessage, { position: 'top-center' });
     },
   });
 
@@ -74,7 +90,7 @@ export function useTempAddress() {
         availableDomains: string[];
         token: string;
       }>(["temp-address", token]);
-      
+
       queryClient.setQueryData(["temp-address", data.token], {
         email: data.email,
         token: data.token,

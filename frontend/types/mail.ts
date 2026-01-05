@@ -45,6 +45,7 @@ export interface TempMailMessage {
   id: string; // For backward compatibility, maps to _id
   _id: string; // MongoDB ID for API operations
   sender: MailSender;
+  recipients?: EmailRecipient[]; // To field from API
   subject: string;
   receivedAt: string; // ISO string
   htmlContent?: string;
@@ -82,6 +83,7 @@ export function mapEmailToTempMailMessage(email: Email): TempMailMessage {
     id: email._id, // For backward compatibility
     _id: email._id,
     sender: email.from,
+    recipients: email.to || [],
     subject: email.subject,
     receivedAt: email.time,
     htmlContent: email.html || undefined,

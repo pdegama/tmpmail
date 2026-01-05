@@ -11,6 +11,7 @@ import { AuthProvider } from "@/providers/auth-provider";
 // Components
 import { Header } from "@/components/common/header";
 import { Footer } from "@/components/common/footer";
+import { Toaster } from "@/components/ui/sonner";
 // Fonts
 import { Geist, Geist_Mono } from "next/font/google";
 
@@ -153,6 +154,7 @@ export default function RootLayout({
         {process.env.NODE_ENV === "production" && (
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || "G-QRV5QX4MMB"} />
         )}
+        <Toaster />
       </body>
     </html>
   );

@@ -89,7 +89,21 @@ export default function InboxDetailView({ message, onBack, onDelete }: Props) {
               {message.sender.address}
             </p>
           </div>
-          <p className="text-xs text-muted-foreground">
+          {message.recipients && message.recipients.length > 0 && (
+            <div className="mt-1">
+              <p className="text-sm text-muted-foreground">
+                To: {message.recipients.map((recipient, index) => (
+                  <span key={index}>
+                    {recipient.name && recipient.name !== recipient.address
+                      ? `${recipient.name} <${recipient.address}>`
+                      : recipient.address}
+                    {index < message.recipients!.length - 1 && ", "}
+                  </span>
+                ))}
+              </p>
+            </div>
+          )}
+          <p className="mt-1 text-xs text-muted-foreground">
             {formatDate(message.receivedAt)}
           </p>
         </div>

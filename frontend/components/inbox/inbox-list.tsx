@@ -114,6 +114,7 @@ export default function InboxList({
                 isFetchingNextPage={isFetchingNextPage}
                 fetchNextPage={fetchNextPage}
                 totalEmails={totalEmails}
+                currentCount={messages.length}
               />
             )}
           </>

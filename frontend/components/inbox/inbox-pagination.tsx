@@ -8,6 +8,7 @@ type Props = {
     isFetchingNextPage: boolean;
     fetchNextPage: () => void;
     totalEmails?: number;
+    currentCount?: number; // Number of emails currently displayed
 };
 
 export default function InboxPagination({
@@ -15,16 +16,37 @@ export default function InboxPagination({
     isFetchingNextPage,
     fetchNextPage,
     totalEmails,
+    currentCount = 0,
 }: Props) {
     if (!hasNextPage && !totalEmails) {
         return null;
     }
 
+    const formatRange = () => {
+        if (totalEmails === undefined) {
+            return null;
+        }
+
+        if (currentCount === 0 && totalEmails === 0) {
+            return null;
+        }
+
+        const start = 1;
+        const end = currentCount > 0 ? currentCount : totalEmails;
+        const total = totalEmails;
+
+        if (end >= total) {
+            return `Showing ${start}-${total} of ${total} ${total === 1 ? "email" : "emails"}`;
+        }
+
+        return `Showing ${start}-${end} of ${total} ${total === 1 ? "email" : "emails"}`;
+    };
+
     return (
         <div className="flex flex-row items-center justify-between gap-3 border-t px-4 py-4 sm:px-6">
-            {totalEmails !== undefined && (
+            {formatRange() && (
                 <p className="text-sm text-muted-foreground">
-                    {totalEmails} {totalEmails === 1 ? "email" : "emails"} total
+                    {formatRange()}
                 </p>
             )}
             {hasNextPage && (
