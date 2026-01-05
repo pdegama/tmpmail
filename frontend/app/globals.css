@@ -119,31 +119,64 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
 }
 
 @layer components {
-  /* Email content styling */
+
+  /* Email content styling with CSS isolation */
   .email-content {
     @apply break-words;
+    /* CSS containment to prevent style leakage */
+    contain: layout style paint;
+    /* Reset any inherited styles that might interfere */
+    all: initial;
+    /* Restore necessary display and font properties */
+    display: block;
+    font-family: inherit;
+    color: inherit;
+    /* Prevent overflow */
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    /* Isolate from parent styles */
+    isolation: isolate;
   }
-  
+
+  .email-content * {
+    /* Reset all styles from email HTML */
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
   .email-content img {
     @apply max-w-full h-auto rounded-md;
+    display: block;
   }
-  
+
   .email-content a {
     @apply text-primary underline-offset-4 hover:underline;
+    color: inherit;
   }
-  
+
   .email-content table {
     @apply w-full border-collapse;
+    display: table;
   }
-  
+
   .email-content table th,
   .email-content table td {
     @apply border border-border p-2;
+    display: table-cell;
+  }
+
+  /* Prevent email styles from affecting UI components */
+  .email-content button,
+  .email-content input,
+  .email-content select,
+  .email-content textarea {
+    all: revert;
   }
 }

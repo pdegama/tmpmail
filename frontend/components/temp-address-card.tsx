@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Copy, RefreshCcw, Shuffle, Trash2, Loader2, Edit } from "lucide-react";
+import { Copy, RefreshCcw, Shuffle, Trash2, Loader2, Edit, Check } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTempAddress } from "@/hooks/useTempAddress";
 
@@ -65,7 +65,7 @@ export default function TempAddressCard({
   const handleCopy = async () => {
     await navigator.clipboard.writeText(email);
     setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
+    setTimeout(() => setCopied(false), 3000);
   };
 
   const handleChange = () => {
@@ -90,10 +90,6 @@ export default function TempAddressCard({
 
   return (
     <div className="mx-auto w-full max-w-2xl px-4 py-2 text-center sm:px-6">
-      <h1 className="mb-4 text-2xl font-bold sm:text-3xl">
-        Your Temporary Email Address
-      </h1>
-
       {/* Email box */}
       <div className="flex items-center justify-between rounded-lg border-2 border-border bg-muted/50 px-4 py-4 shadow-sm sm:px-6">
         <span className="truncate text-base font-medium sm:text-lg">
@@ -108,8 +104,13 @@ export default function TempAddressCard({
                 variant="ghost"
                 onClick={handleCopy}
                 className="shrink-0 cursor-pointer"
+                aria-label={copied ? "Email copied" : "Copy email address"}
               >
-                <Copy className="h-4 w-4" />
+                {copied ? (
+                  <Check className="h-4 w-4" />
+                ) : (
+                  <Copy className="h-4 w-4" />
+                )}
               </Button>
             </TooltipTrigger>
             <TooltipContent>

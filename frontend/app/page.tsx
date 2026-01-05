@@ -40,6 +40,9 @@ export default function Home() {
 
   return (
     <main className="flex min-h-full flex-col py-4 sm:py-6">
+      <h1 className="mx-auto mb-4 w-full max-w-2xl px-4 text-center text-2xl font-bold sm:px-6 sm:text-3xl">
+        Your Temporary Email Address
+      </h1>
       {email && (
         <TempAddressCard
           email={email}
