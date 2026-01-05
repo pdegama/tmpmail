@@ -96,7 +96,7 @@ export default function InboxDetailView({ message, onBack, onDelete }: Props) {
 
         {/* Subject */}
         <div className="mb-6 border-b pb-4">
-          <h1 className="text-xl font-bold sm:text-2xl">{message.subject}</h1>
+          <h1 className="break-words text-xl font-bold sm:text-2xl">{message.subject}</h1>
         </div>
 
         {/* Email Content */}

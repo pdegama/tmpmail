@@ -76,7 +76,7 @@ export default function InboxRow({
 
       {/* Subject */}
       <div className="flex min-w-0 items-center gap-2 sm:gap-3">
-        <div className="min-w-0 flex-1 truncate text-base sm:text-lg">
+        <div className="min-w-0 flex-1 truncate break-words text-base sm:text-lg">
           {message.subject}
         </div>
         {attachmentCount > 0 && (
