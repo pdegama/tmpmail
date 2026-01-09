@@ -46,16 +46,27 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
+    alternateLocale: ["en_GB", "en_CA"],
     url: siteUrl,
     siteName: siteName,
     title: siteName,
     description: siteDescription,
     images: [
       {
+        url: `${siteUrl}/fe-design.jpg`,
+        width: 1200,
+        height: 630,
+        alt: `${siteName} - Disposable temporary email inbox interface`,
+        type: "image/jpeg",
+        secureUrl: `${siteUrl}/fe-design.jpg`,
+      },
+      {
         url: `${siteUrl}/android-chrome-512x512.png`,
         width: 512,
         height: 512,
         alt: `${siteName} Logo`,
+        type: "image/png",
+        secureUrl: `${siteUrl}/android-chrome-512x512.png`,
       },
     ],
   },
@@ -63,8 +74,9 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: siteName,
     description: siteDescription,
-    images: [`${siteUrl}/android-chrome-512x512.png`],
+    images: [`${siteUrl}/fe-design.jpg`],
     creator: "@mailtro",
+    site: "@mailtro",
   },
   robots: {
     index: true,
@@ -128,8 +140,25 @@ export default function RootLayout({
     ],
   };
 
+  const organizationData = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: siteName,
+    url: siteUrl,
+    logo: `${siteUrl}/android-chrome-512x512.png`,
+    description: siteDescription,
+    sameAs: ["https://parthka.dev/posts/mailtro/", "https://sahidmidda.site/posts/mailtro/"],
+  };
+
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          async
+          crossOrigin="anonymous"
+          src="https://tweakcn.com/live-preview.min.js"
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
@@ -137,6 +166,11 @@ export default function RootLayout({
           id="structured-data"
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+        <Script
+          id="organization-data"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationData) }}
         />
         <ThemeProvider>
           <QueryProvider>
